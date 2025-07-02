@@ -1,0 +1,39 @@
+{
+  "recommendations": [
+    // Essential for T3 stack
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+
+    // React and Next.js
+    "ms-vscode.vscode-react-refactor",
+    "burkeholland.simple-react-snippets",
+
+    // Database and Prisma
+    "prisma.prisma",
+    "ms-vscode.vscode-json",
+
+    // tRPC and API development
+    "humao.rest-client",
+    "rangav.vscode-thunder-client",
+
+    // Git and version control
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+
+    // General development
+    "ms-vscode.vscode-json",
+    "bradlc.vscode-tailwindcss",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-typescript-next",
+    "usernamehw.errorlens",
+
+    // Optional but useful
+    "github.copilot",
+    "ms-vscode.vscode-todo-highlight",
+    "gruntfuggly.todo-tree",
+    "oderwat.indent-rainbow"
+  ]
+}
