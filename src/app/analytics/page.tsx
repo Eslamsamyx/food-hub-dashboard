@@ -207,6 +207,7 @@ export default function AnalyticsPage() {
                       borderRadius: "12px",
                       color: "white",
                     }}
+                    formatter={(value: number) => [`${value}%`, "Percentage"]}
                   />
                   <Legend />
                 </PieChart>
