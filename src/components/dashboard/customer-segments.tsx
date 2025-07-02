@@ -8,13 +8,13 @@ export function CustomerSegments() {
   const segments = customerAnalytics.segments;
 
   return (
-    <div className="backdrop-blur-md bg-white/10 rounded-2xl p-6 border border-white/20 shadow-xl">
+    <div className="rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-md">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-white mb-2">Customer Segments</h2>
+        <h2 className="mb-2 text-xl font-bold text-white">Customer Segments</h2>
         <p className="text-sm text-slate-300">Revenue distribution by customer segment</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Pie Chart */}
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -24,7 +24,7 @@ export function CustomerSegments() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ segment, percent }) => `${segment} ${(percent * 100).toFixed(0)}%`}
+                label={({ segment, percent }) => `${segment} ${((percent ?? 0) * 100).toFixed(0)}%`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="revenue"
@@ -33,7 +33,7 @@ export function CustomerSegments() {
                   <Cell key={`segment-${entry.segment}-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 formatter={(value: number) => [formatCurrency(value), "Revenue"]}
                 contentStyle={{
                   backgroundColor: "rgba(15, 23, 42, 0.9)",
@@ -50,11 +50,14 @@ export function CustomerSegments() {
         {/* Segment Details */}
         <div className="space-y-4">
           {segments.map((segment) => (
-            <div key={`segment-detail-${segment.segment}`} className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
-              <div className="flex items-center justify-between mb-3">
+            <div
+              key={`segment-detail-${segment.segment}`}
+              className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm"
+            >
+              <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div 
-                    className="w-4 h-4 rounded-full"
+                  <div
+                    className="h-4 w-4 rounded-full"
                     style={{ backgroundColor: segment.color }}
                   />
                   <h3 className="text-lg font-semibold text-white">{segment.segment}</h3>
@@ -69,16 +72,16 @@ export function CustomerSegments() {
 
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <div className="text-slate-400 mb-1">Customers</div>
-                  <div className="text-white font-semibold">{formatNumber(segment.customers)}</div>
+                  <div className="mb-1 text-slate-400">Customers</div>
+                  <div className="font-semibold text-white">{formatNumber(segment.customers)}</div>
                 </div>
                 <div>
-                  <div className="text-slate-400 mb-1">Avg Deal</div>
-                  <div className="text-white font-semibold">{formatCurrency(segment.avgDeal)}</div>
+                  <div className="mb-1 text-slate-400">Avg Deal</div>
+                  <div className="font-semibold text-white">{formatCurrency(segment.avgDeal)}</div>
                 </div>
                 <div>
-                  <div className="text-slate-400 mb-1">Retention</div>
-                  <div className="text-white font-semibold">{segment.retention}%</div>
+                  <div className="mb-1 text-slate-400">Retention</div>
+                  <div className="font-semibold text-white">{segment.retention}%</div>
                 </div>
               </div>
             </div>
@@ -88,21 +91,20 @@ export function CustomerSegments() {
 
       {/* Customer Lifecycle */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-white mb-4">Customer Lifecycle</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h3 className="mb-4 text-lg font-semibold text-white">Customer Lifecycle</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {customerAnalytics.lifecycle.map((stage) => (
-            <div key={`lifecycle-${stage.stage}`} className="backdrop-blur-sm bg-white/5 rounded-xl p-4 border border-white/10">
+            <div
+              key={`lifecycle-${stage.stage}`}
+              className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm"
+            >
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">
+                <div className="mb-1 text-2xl font-bold text-white">
                   {formatNumber(stage.count)}
                 </div>
-                <div className="text-sm text-slate-300 mb-2">{stage.stage}</div>
-                <div className="text-xs text-slate-400">
-                  {stage.conversion}% conversion
-                </div>
-                <div className="text-xs text-slate-400">
-                  {formatCurrency(stage.cost)} avg cost
-                </div>
+                <div className="mb-2 text-sm text-slate-300">{stage.stage}</div>
+                <div className="text-xs text-slate-400">{stage.conversion}% conversion</div>
+                <div className="text-xs text-slate-400">{formatCurrency(stage.cost)} avg cost</div>
               </div>
             </div>
           ))}
@@ -110,4 +112,4 @@ export function CustomerSegments() {
       </div>
     </div>
   );
-} 
+}

@@ -1,82 +1,110 @@
 "use client";
 
-import { Card } from "~/components/ui/card";
-import { formatCurrency, formatPercentage } from "~/lib/utils";
-
-interface PipelineStage {
-  stage: string;
-  deals: number;
-  value: number;
-  probability: number;
-}
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { formatCurrency, formatNumber } from "~/lib/utils";
 
 interface SalesPipelineProps {
-  data: PipelineStage[];
+  data: Array<{
+    stage: string;
+    deals: number;
+    value: number;
+    probability: number;
+    weightedValue: number;
+  }>;
 }
 
-export function SalesPipeline({ data = [] }: SalesPipelineProps) {
+export function SalesPipeline({ data }: SalesPipelineProps) {
   const totalValue = data.reduce((sum, stage) => sum + stage.value, 0);
-  const weightedValue = data.reduce((sum, stage) => sum + (stage.value * stage.probability / 100), 0);
-  const maxDeals = data.length > 0 ? Math.max(...data.map(stage => stage.deals)) : 0;
+  const totalWeightedValue = data.reduce((sum, stage) => sum + stage.weightedValue, 0);
 
   return (
-    <Card>
-      <Card.Header>
-        <Card.Title>Sales Pipeline</Card.Title>
-      </Card.Header>
-      <Card.Content>
-        <div className="space-y-6">
-          {/* Pipeline Stages */}
-          <div className="space-y-4">
-            {data.map((stage, index) => {
-              const width = (stage.deals / maxDeals) * 100;
-              const probabilityColor = 
-                stage.probability >= 80 ? "text-green-300" :
-                stage.probability >= 50 ? "text-yellow-300" :
-                "text-red-300";
-              
-              return (
-                <div key={stage.stage} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-white">{stage.stage}</span>
-                    <span className="text-slate-300">
-                      {stage.deals} deals • {formatCurrency(stage.value)}
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <div className="w-full bg-white/20 rounded-full h-8">
-                      <div 
-                        className="h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-end pr-4 transition-all duration-500 shadow-lg"
-                        style={{ width: `${width}%` }}
-                      >
-                        <span className={`text-sm font-medium ${probabilityColor}`}>
-                          {formatPercentage(stage.probability)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+    <div className="rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-md">
+      <div className="mb-6">
+        <h2 className="mb-2 text-xl font-bold text-white">Sales Pipeline</h2>
+        <p className="text-sm text-slate-300">Deal progression through sales stages</p>
+      </div>
 
-          {/* Summary Stats */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
-            <div className="text-center">
-              <span className="text-slate-300">Total Pipeline Value</span>
-              <div className="text-lg font-bold text-white mt-1">
-                {formatCurrency(totalValue)}
-              </div>
-            </div>
-            <div className="text-center">
-              <span className="text-slate-300">Weighted Value</span>
-              <div className="text-lg font-bold text-white mt-1">
-                {formatCurrency(weightedValue)}
-              </div>
-            </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Pipeline Chart */}
+        <div className="lg:col-span-2">
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis
+                  dataKey="stage"
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis stroke="#94a3b8" fontSize={12} />
+                <Tooltip
+                  formatter={(value: number, name: string) => [
+                    name === "value" ? formatCurrency(value) : formatCurrency(value),
+                    name === "value" ? "Total Value" : "Weighted Value",
+                  ]}
+                  contentStyle={{
+                    backgroundColor: "rgba(15, 23, 42, 0.9)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "12px",
+                    color: "white",
+                  }}
+                />
+                <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="weightedValue" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </Card.Content>
-    </Card>
+
+        {/* Pipeline Summary */}
+        <div className="space-y-4">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+            <h3 className="mb-4 text-lg font-semibold text-white">Pipeline Summary</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-slate-300">Total Pipeline</span>
+                <span className="text-sm font-semibold text-white">
+                  {formatCurrency(totalValue)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-slate-300">Weighted Pipeline</span>
+                <span className="text-sm font-semibold text-emerald-300">
+                  {formatCurrency(totalWeightedValue)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-slate-300">Total Deals</span>
+                <span className="text-sm font-semibold text-white">
+                  {formatNumber(data.reduce((sum, stage) => sum + stage.deals, 0))}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stage Details */}
+          <div className="space-y-2">
+            {data.map((stage, _index) => (
+              <div
+                key={`pipeline-${stage.stage}`}
+                className="rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm"
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <h4 className="text-sm font-semibold text-white">{stage.stage}</h4>
+                  <span className="text-xs text-slate-400">{stage.probability}%</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">{formatNumber(stage.deals)} deals</span>
+                  <span className="font-medium text-white">{formatCurrency(stage.value)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
-} 
+}
